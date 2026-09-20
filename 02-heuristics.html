@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2 · Tracing Heuristics · Bitcoin Tracing (Class 4 of 5)</title>
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2330;--ink:#e6edf3;--mut:#9aa7b4;
+  --acc:#f7931a;--acc2:#58a6ff;--good:#3fb950;--bad:#f85149;--warn:#d29922;--line:#2d3748;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65}
+  a{color:var(--acc2)}
+  header.top{background:linear-gradient(90deg,#11161d,#1a1206);border-bottom:2px solid var(--acc);padding:14px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  header.top .btc{width:34px;height:34px;border-radius:50%;background:var(--acc);color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px}
+  header.top h1{font-size:1.05rem;margin:0;font-weight:600;letter-spacing:.3px}
+  header.top .tag{color:var(--mut);font-size:.8rem}
+  nav.tabs{background:var(--panel);padding:8px 20px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  nav.tabs a{padding:6px 12px;border-radius:6px;text-decoration:none;color:var(--mut);font-size:.85rem;border:1px solid transparent}
+  nav.tabs a:hover{color:var(--ink)}
+  nav.tabs a.on{background:var(--panel2);color:var(--acc);border-color:var(--line)}
+  main{max-width:980px;margin:0 auto;padding:26px 22px 80px}
+  h2{border-left:4px solid var(--acc);padding-left:12px;margin-top:36px}
+  h3{color:var(--acc);margin-top:28px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:16px 0}
+  .note{border-left:4px solid var(--acc2);background:#12233a;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .warn{border-left:4px solid var(--warn);background:#2a2114;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .law{border-left:4px solid var(--good);background:#10261a;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  code,kbd{background:#0b0f14;border:1px solid var(--line);border-radius:5px;padding:1px 7px;font-family:Consolas,Menlo,monospace;font-size:.88em;color:#ffd9a0}
+  pre{background:#0b0f14;border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:Consolas,Menlo,monospace;font-size:.85rem;line-height:1.55;color:#cfe3ff}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.88rem}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:var(--acc)}
+  tr:nth-child(even){background:#11161f}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.75rem;border:1px solid var(--line);background:var(--panel2)}
+  .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .flow .box{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:.85rem;font-family:Consolas,monospace}
+  .flow .arr{color:var(--acc);font-weight:700}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.cols{grid-template-columns:1fr}}
+  .btn{background:var(--acc);color:#111;border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;font-size:.9rem}
+  .btn.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:10px 14px;margin:8px 0;cursor:pointer;font-size:.92rem}
+  .opt:hover{border-color:var(--acc)}
+  .opt.correct{border-color:var(--good);background:#10261a}
+  .opt.wrong{border-color:var(--bad);background:#2a1517}
+  .q{margin:20px 0;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+  .q .fb{font-size:.85rem;margin-top:8px;display:none}
+  .q .fb.ok{display:block;color:var(--good)}
+  .q .fb.no{display:block;color:var(--bad)}
+  .foot{color:var(--mut);font-size:.8rem;margin-top:50px;border-top:1px solid var(--line);padding-top:14px}
+  .kicker{color:var(--acc);text-transform:uppercase;letter-spacing:2px;font-size:.72rem;font-weight:700}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:760px){.grid3{grid-template-columns:1fr}}
+  svg text{font-family:Consolas,Menlo,monospace}
+  .legend span{margin-right:14px;font-size:.8rem}
+  .dot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  .step{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:8px;padding:12px 16px;margin:10px 0}
+  .step b{color:var(--acc2)}
+  .clock{color:var(--warn);font-weight:700;font-family:Consolas,monospace}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="btc">₿</div>
+  <div>
+    <h1>Bitcoin Investigations — Class 4 of 5: Tracing Transactions &amp; OP_RETURN</h1>
+    <div class="tag">Law Enforcement Training · Sample data only · Tool-agnostic</div>
+  </div>
+</header>
+<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="on">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a></nav>
+<main>
+
+<p class="kicker">Segment 2 · 12 minutes</p>
+<h2>Tracing Heuristics</h2>
+<p>Addresses look random, so how do investigators group thousands of them into a handful of "wallets" or entities? Three classical heuristics — <b>assumptions validated by how ordinary wallet software behaves</b>.</p>
+
+<h3>Heuristic 1 — Common-input ownership</h3>
+<div class="card">
+<p><b>Rule:</b> all addresses contributing inputs to the same transaction are assumed controlled by the same entity.</p>
+<p><b>Why it usually works:</b> to spend a UTXO you must produce its private key's signature. A typical wallet assembles enough of <i>its own</i> UTXOs to cover the payment — so the inputs almost always belong to one person.</p>
+<pre>Tx 9f2c…e1 (inputs)
+ ├─ input 0  ← UTXO locked to address A1   ┐
+ └─ input 1  ← UTXO locked to address A2   ┴─&gt; assume same owner: cluster {A1, A2}</pre>
+<p class="warn" style="margin:10px 0 0"><b>Where it breaks:</b> collaborative transactions. CoinJoin-style constructions deliberately mix inputs from many strangers in one transaction. If a tx has 20+ inputs of equal size, treat this heuristic as unreliable and look for structure (equal denominations, peeling pattern) before clustering.</p>
+</div>
+
+<h3>Heuristic 2 — Change detection</h3>
+<div class="card">
+<p><b>Rule:</b> in a 2-output payment, one output is the payee, the other is change back to the sender. Spot the change and you have just linked a brand-new address to your subject.</p>
+<p><b>Change output signals (strongest first):</b></p>
+<ol>
+<li><b>Address type match:</b> modern wallets send change to the <i>same script type</i> they spent from (P2WPKH in → P2WPKH change). If the payment went to a different, newer type, the odd one out is often the payment.</li>
+<li><b>The "odd" address:</b> if one output address appears in many transactions (reused — typical of a merchant/deposit address) and the other is brand new, the reused one is the payment and the fresh one is change.</li>
+<li><b>Round numbers:</b> payments to people are often round (0.5 BTC, 0.25 BTC). Change is whatever awkward remainder makes the math work.</li>
+<li><b>Position:</b> many wallets put change in a predictable output slot — useful only as a weak tiebreaker, never as primary proof.</li>
+<li><b>Amount:</b> change is usually the <i>smaller</i> output — weak signal, use with others.</li>
+</ol>
+<pre>Tx 4bd1…7a :  inputs 1.20 BTC
+ ├─ output 0: 0.50 BTC → bc1q…x9   (round amount, reused address)  =&gt; PAYMENT
+ └─ output 1: 0.6997 BTC → bc1q…k3 (fresh, same type, remainder−fee) =&gt; CHANGE → now yours to follow</pre>
+</div>
+
+<h3>Heuristic 3 — Address reuse</h3>
+<div class="card">
+<p><b>Rule:</b> an address that receives repeatedly (especially many small inflows from unrelated sources) is usually a <b>deposit address of a service</b> — exchange, payment processor, donation page — or a reused personal address.</p>
+<p>Reuse lets you anchor a cluster: five different victims paying the same address in one week is a strong pattern to document. (Privacy best practice says never reuse; investigators benefit when people ignore best practice.)</p>
+</div>
+
+<h3>Patterns to recognize on sight</h3>
+<table>
+<tr><th>Pattern</th><th>What it looks like</th><th>Likely meaning</th></tr>
+<tr><td><b>Peel chain</b></td><td>Long string of txs: each spends the previous change, sends a small payment forward, keeps peeling</td><td>Wallet paying many recipients, or a payout script; follow the <i>change</i> spine</td></tr>
+<tr><td><b>Consolidation</b></td><td>Many inputs → one or two large outputs</td><td>Subject sweeping funds (often before a large cash-out); big clustering win</td></tr>
+<tr><td><b>Fan-out</b></td><td>One tx → many outputs of equal size</td><td>Payouts, or a mixer splitting funds into equal lots</td></tr>
+<tr><td><b>Equal-amount fan-in</b></td><td>Many equal inputs in one tx</td><td>Classic CoinJoin fingerprint — do NOT apply common-input ownership blindly</td></tr>
+<tr><td><b>Dusting</b></td><td>Tiny outputs (a few hundred sats) sent to thousands of addresses</td><td>Dust attack / spam — note it, don't chase it</td></tr>
+<tr><td><b>Pass-through / sweep</b></td><td>In → out within minutes/hours, whole amount minus fee</td><td>Intermediate hop; intermediate wallets often show short "dwell time"</td></tr>
+</table>
+
+<h3>The heuristics hierarchy of evidence</h3>
+<div class="law">When you write your report, rank your findings: <b>(1)</b> cryptographic facts (signatures, amounts, timestamps — certain), <b>(2)</b> strong heuristic conclusions (multi-signal change detection — very likely), <b>(3)</b> single-signal guesses (position, "smaller output") — label them as inferences. Your case collapses if a defense expert shows you treated a guess as a fact.</div>
+
+<div class="warn"><b>Chain-hopping note for the room:</b> today we trace on Bitcoin only. When value hops to another chain via a swap or bridge, the same UTXO logic ends at the hop — you continue with other techniques (covered in Class 5 preview).</div>
+<p style="text-align:right"><a href="03-tracing-lab.html">Next: Tracing Lab (hands-on) →</a></p>
+
+<div class="foot">Class 4 of 5 · Prerequisite: Class 3 (UTXO model) · All transactions, addresses and TXIDs in this course are <b>fabricated sample data</b> for training purposes. Nothing here references real persons or real on-chain activity.</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7 · Quiz & Wrap · Bitcoin Tracing (Class 4 of 5)</title>
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2330;--ink:#e6edf3;--mut:#9aa7b4;
+  --acc:#f7931a;--acc2:#58a6ff;--good:#3fb950;--bad:#f85149;--warn:#d29922;--line:#2d3748;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65}
+  a{color:var(--acc2)}
+  header.top{background:linear-gradient(90deg,#11161d,#1a1206);border-bottom:2px solid var(--acc);padding:14px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  header.top .btc{width:34px;height:34px;border-radius:50%;background:var(--acc);color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px}
+  header.top h1{font-size:1.05rem;margin:0;font-weight:600;letter-spacing:.3px}
+  header.top .tag{color:var(--mut);font-size:.8rem}
+  nav.tabs{background:var(--panel);padding:8px 20px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  nav.tabs a{padding:6px 12px;border-radius:6px;text-decoration:none;color:var(--mut);font-size:.85rem;border:1px solid transparent}
+  nav.tabs a:hover{color:var(--ink)}
+  nav.tabs a.on{background:var(--panel2);color:var(--acc);border-color:var(--line)}
+  main{max-width:980px;margin:0 auto;padding:26px 22px 80px}
+  h2{border-left:4px solid var(--acc);padding-left:12px;margin-top:36px}
+  h3{color:var(--acc);margin-top:28px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:16px 0}
+  .note{border-left:4px solid var(--acc2);background:#12233a;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .warn{border-left:4px solid var(--warn);background:#2a2114;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .law{border-left:4px solid var(--good);background:#10261a;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  code,kbd{background:#0b0f14;border:1px solid var(--line);border-radius:5px;padding:1px 7px;font-family:Consolas,Menlo,monospace;font-size:.88em;color:#ffd9a0}
+  pre{background:#0b0f14;border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:Consolas,Menlo,monospace;font-size:.85rem;line-height:1.55;color:#cfe3ff}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.88rem}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:var(--acc)}
+  tr:nth-child(even){background:#11161f}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.75rem;border:1px solid var(--line);background:var(--panel2)}
+  .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .flow .box{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:.85rem;font-family:Consolas,monospace}
+  .flow .arr{color:var(--acc);font-weight:700}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.cols{grid-template-columns:1fr}}
+  .btn{background:var(--acc);color:#111;border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;font-size:.9rem}
+  .btn.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:10px 14px;margin:8px 0;cursor:pointer;font-size:.92rem}
+  .opt:hover{border-color:var(--acc)}
+  .opt.correct{border-color:var(--good);background:#10261a}
+  .opt.wrong{border-color:var(--bad);background:#2a1517}
+  .q{margin:20px 0;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+  .q .fb{font-size:.85rem;margin-top:8px;display:none}
+  .q .fb.ok{display:block;color:var(--good)}
+  .q .fb.no{display:block;color:var(--bad)}
+  .foot{color:var(--mut);font-size:.8rem;margin-top:50px;border-top:1px solid var(--line);padding-top:14px}
+  .kicker{color:var(--acc);text-transform:uppercase;letter-spacing:2px;font-size:.72rem;font-weight:700}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:760px){.grid3{grid-template-columns:1fr}}
+  svg text{font-family:Consolas,Menlo,monospace}
+  .legend span{margin-right:14px;font-size:.8rem}
+  .dot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  .step{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:8px;padding:12px 16px;margin:10px 0}
+  .step b{color:var(--acc2)}
+  .clock{color:var(--warn);font-weight:700;font-family:Consolas,monospace}
+</style>
+
+<script>
+const QUIZ=[
+ {q:"A transaction has two inputs from addresses A and B. Under common-input ownership you assume…",
+  o:["A and B belong to the same entity","A and B are two victims","A paid B","The tx is a CoinJoin, always"],
+  a:0,w:"All inputs must be signed for — ordinary wallets spend their own UTXOs together. (Watch for CoinJoin exceptions.)"},
+ {q:"Which is the STRONGEST change-detection signal?",
+  o:["Change is the smaller output","Change output matches the spent UTXO's script type","Change is always output #1","Change has a round amount"],
+  a:1,w:"Script-type match is the strongest; 'smaller' and 'position' are weak tiebreakers."},
+ {q:"In lab transaction T2, the OP_RETURN output carried 0 BTC. That output…",
+  o:["Is unspendable and carries data, not value","Is the suspect's change","Can be spent with a special key","Proves the tx is a CoinJoin"],
+  a:0,w:"OP_RETURN outputs are provably unspendable and carry up to 80 bytes of data."},
+ {q:"An address receives small deposits from 60 unrelated addresses, then its balance is swept in one tx. Most likely…",
+  o:["Personal savings wallet","A mixer","A service deposit address with internal consolidation","A dust attack only"],
+  a:2,w:"Many unrelated inflows + sweep = classic service deposit pattern (Heuristic 3)."},
+ {q:"Row T3 in the lab dataset was a trap because…",
+  o:["Its fee was too low","It tried to re-spend a UTXO already spent in T2","It had no outputs","Its timestamp was in the future"],
+  a:1,w:"UTXOs are spent exactly once — that's what consensus guarantees."},
+ {q:"Before expanding a transaction graph, your first preservation step is…",
+  o:["Cluster all inputs","Screenshot + record full txid, height, timestamp, and hash exports","Run a CoinJoin detector","Tag every address as suspect"],
+  a:1,w:"Preserve before you analyze — chain of custody first."},
+ {q:"When should you apply common-input ownership to a 30-input equal-amount transaction?",
+  o:["Always","Never, without further analysis — that's a CoinJoin fingerprint","Only on weekends","Only if outputs are round"],
+  a:1,w:"Equal-amount multi-input txs are classic CoinJoins; clustering them creates false attribution."},
+ {q:"The on-chain trace ends when value reaches a service deposit address. The next step is…",
+  o:["Keep tracing forever","Legal process to the platform for KYC/withdrawal records","Declare the case closed","Publish the addresses online"],
+  a:1,w:"The chain shows where value went; identity comes from off-chain records via legal process."}
+];
+function renderQuiz(){
+  const c=document.getElementById('quiz');
+  c.innerHTML=QUIZ.map((Q,i)=>`
+   <div class="q" id="q${i}">
+     <b>Q${i+1}.</b> ${Q.q}
+     ${Q.o.map((o,j)=>`<button class="opt" onclick="answer(${i},${j},this)">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}
+     <div class="fb" id="fb${i}"></div>
+   </div>`).join('')+`<button class="btn" onclick="grade()">Score me</button> <span id="score" style="margin-left:14px;font-weight:700;color:var(--acc)"></span>`;
+}
+let done=new Set();
+function answer(i,j,btn){
+  if(done.has(i))return; done.add(i);
+  const Q=QUIZ[i], opts=btn.parentElement.querySelectorAll('.opt');
+  opts[Q.a].classList.add('correct');
+  const fb=document.getElementById('fb'+i);
+  if(j===Q.a){fb.className='fb ok';fb.textContent='✓ Correct. '+Q.w;}
+  else{btn.classList.add('wrong');fb.className='fb no';fb.textContent='✗ Not quite. '+Q.w;}
+}
+function grade(){
+  document.getElementById('score').textContent=`You answered ${done.size} of ${QUIZ.length} — review any red boxes with your partner.`;
+}
+window.onload=renderQuiz;
+</script>
+
+</head>
+<body>
+<header class="top">
+  <div class="btc">₿</div>
+  <div>
+    <h1>Bitcoin Investigations — Class 4 of 5: Tracing Transactions &amp; OP_RETURN</h1>
+    <div class="tag">Law Enforcement Training · Sample data only · Tool-agnostic</div>
+  </div>
+</header>
+<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="on">7 · Quiz & Wrap</a></nav>
+<main>
+
+<p class="kicker">Segment 6 · 4 minutes + take-home</p>
+<h2>Knowledge Check &amp; Wrap-Up</h2>
+<p>Answer individually, then compare with a partner. The quiz is self-scoring and works offline.</p>
+<div id="quiz"></div>
+
+<h2>Wrap-up: what you learned today</h2>
+<div class="card">
+<ol>
+<li><b>Tracing is possible because UTXOs can't teleport</b> — value flows along a complete public chain.</li>
+<li><b>Three heuristics do the clustering:</b> common-input ownership, change detection, address reuse — each with known failure modes.</li>
+<li><b>You traced a 7-hop ransom flow</b> from victim payment to exchange deposit, and documented every hop on a worksheet.</li>
+<li><b>OP_RETURN outputs carry data, not money</b> — decode them; they can link a transaction to documents, notes, and protocols.</li>
+<li><b>Visual analysis is a method, not a product:</b> preserve → expand → color → follow the change spine → annotate → export table + graph.</li>
+<li><b>The chain ends at the service door; identity comes from legal process.</b></li>
+</ol>
+</div>
+
+<h3>⚠️ Limitations to carry into casework</h3>
+<div class="warn">
+<ul>
+<li><b>CoinJoin / PayJoin / collaborative spending</b> break naive clustering — recognize the fingerprints first.</li>
+<li><b>Lightning Network</b> moves value off-chain; on-chain you see only channel open/close — a different skill set (Class 5).</li>
+<li><b>Chain-hopping</b> (swaps/bridges) ends Bitcoin UTXO tracing at the hop point.</li>
+<li><b>Heuristics are assumptions.</b> Every report must state which were used and defend them.</li>
+</ul>
+</div>
+
+<h3>Preview — Class 5 of 5</h3>
+<div class="law">Next class: <b>Advanced obfuscation &amp; casework</b> — mixers and CoinJoins in depth, tracing Lightning channel flows, cross-chain hops, OSINT corroboration, and building the full investigative report from all five classes. Bring a laptop: we'll run a guided trace on a live explorer in a sandboxed exercise.</div>
+
+<h3>Homework (10 min)</h3>
+<div class="note">Re-run the RANSOM-7 trace using only the printed dataset and a blank worksheet — no slides. If you can produce the full evidentiary table from memory of method (not of answers), you're ready for real casework supervision.</div>
+
+<div class="foot">Class 4 of 5 · Prerequisite: Class 3 (UTXO model) · All transactions, addresses and TXIDs in this course are <b>fabricated sample data</b> for training purposes. Nothing here references real persons or real on-chain activity.</div>
+</main>
+</body>
+</html>

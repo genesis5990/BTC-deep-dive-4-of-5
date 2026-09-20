@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6 · Case Study · Bitcoin Tracing (Class 4 of 5)</title>
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2330;--ink:#e6edf3;--mut:#9aa7b4;
+  --acc:#f7931a;--acc2:#58a6ff;--good:#3fb950;--bad:#f85149;--warn:#d29922;--line:#2d3748;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65}
+  a{color:var(--acc2)}
+  header.top{background:linear-gradient(90deg,#11161d,#1a1206);border-bottom:2px solid var(--acc);padding:14px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  header.top .btc{width:34px;height:34px;border-radius:50%;background:var(--acc);color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px}
+  header.top h1{font-size:1.05rem;margin:0;font-weight:600;letter-spacing:.3px}
+  header.top .tag{color:var(--mut);font-size:.8rem}
+  nav.tabs{background:var(--panel);padding:8px 20px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  nav.tabs a{padding:6px 12px;border-radius:6px;text-decoration:none;color:var(--mut);font-size:.85rem;border:1px solid transparent}
+  nav.tabs a:hover{color:var(--ink)}
+  nav.tabs a.on{background:var(--panel2);color:var(--acc);border-color:var(--line)}
+  main{max-width:980px;margin:0 auto;padding:26px 22px 80px}
+  h2{border-left:4px solid var(--acc);padding-left:12px;margin-top:36px}
+  h3{color:var(--acc);margin-top:28px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:16px 0}
+  .note{border-left:4px solid var(--acc2);background:#12233a;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .warn{border-left:4px solid var(--warn);background:#2a2114;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .law{border-left:4px solid var(--good);background:#10261a;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  code,kbd{background:#0b0f14;border:1px solid var(--line);border-radius:5px;padding:1px 7px;font-family:Consolas,Menlo,monospace;font-size:.88em;color:#ffd9a0}
+  pre{background:#0b0f14;border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:Consolas,Menlo,monospace;font-size:.85rem;line-height:1.55;color:#cfe3ff}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.88rem}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:var(--acc)}
+  tr:nth-child(even){background:#11161f}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.75rem;border:1px solid var(--line);background:var(--panel2)}
+  .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .flow .box{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:.85rem;font-family:Consolas,monospace}
+  .flow .arr{color:var(--acc);font-weight:700}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.cols{grid-template-columns:1fr}}
+  .btn{background:var(--acc);color:#111;border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;font-size:.9rem}
+  .btn.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:10px 14px;margin:8px 0;cursor:pointer;font-size:.92rem}
+  .opt:hover{border-color:var(--acc)}
+  .opt.correct{border-color:var(--good);background:#10261a}
+  .opt.wrong{border-color:var(--bad);background:#2a1517}
+  .q{margin:20px 0;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+  .q .fb{font-size:.85rem;margin-top:8px;display:none}
+  .q .fb.ok{display:block;color:var(--good)}
+  .q .fb.no{display:block;color:var(--bad)}
+  .foot{color:var(--mut);font-size:.8rem;margin-top:50px;border-top:1px solid var(--line);padding-top:14px}
+  .kicker{color:var(--acc);text-transform:uppercase;letter-spacing:2px;font-size:.72rem;font-weight:700}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:760px){.grid3{grid-template-columns:1fr}}
+  svg text{font-family:Consolas,Menlo,monospace}
+  .legend span{margin-right:14px;font-size:.8rem}
+  .dot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  .step{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:8px;padding:12px 16px;margin:10px 0}
+  .step b{color:var(--acc2)}
+  .clock{color:var(--warn);font-weight:700;font-family:Consolas,monospace}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="btc">₿</div>
+  <div>
+    <h1>Bitcoin Investigations — Class 4 of 5: Tracing Transactions &amp; OP_RETURN</h1>
+    <div class="tag">Law Enforcement Training · Sample data only · Tool-agnostic</div>
+  </div>
+</header>
+<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="on">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a></nav>
+<main>
+
+<p class="kicker">Segment 5 (cont.) · capstone</p>
+<h2>Case Study: RANSOM-7, End to End</h2>
+<div class="warn"><b>Fabricated scenario for training.</b> All data invented; any resemblance to real cases is coincidental.</div>
+
+<h3>Exhibit A — the value-flow graph</h3>
+
+<svg viewBox="0 0 940 300" width="100%" style="background:#0b0f14;border:1px solid var(--line);border-radius:8px">
+  <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 z" fill="#f7931a"/></marker></defs>
+  <text x="16" y="24" fill="#9aa7b4" font-size="12">CAPSTONE GRAPH — "RANSOM-7" full exhibit view (sample data)</text>
+  <g font-size="11">
+    <rect x="30" y="120" width="120" height="52" rx="8" fill="#1c2330" stroke="#f7931a" stroke-width="2"/>
+    <text x="90" y="142" fill="#f7931a" text-anchor="middle">VICTIM</text>
+    <text x="90" y="158" fill="#9aa7b4" text-anchor="middle">T1 · 21:14</text>
+    <rect x="210" y="120" width="120" height="52" rx="8" fill="#1c2330" stroke="#58a6ff" stroke-width="2"/>
+    <text x="270" y="142" fill="#58a6ff" text-anchor="middle">R1 + OP_RETURN</text>
+    <text x="270" y="158" fill="#9aa7b4" text-anchor="middle">T2 · 22:03</text>
+    <rect x="390" y="120" width="120" height="52" rx="8" fill="#1c2330" stroke="#d29922" stroke-width="2"/>
+    <text x="450" y="142" fill="#d29922" text-anchor="middle">H1a</text>
+    <text x="450" y="158" fill="#9aa7b4" text-anchor="middle">T4 · 01:47</text>
+    <rect x="570" y="60" width="120" height="52" rx="8" fill="#1c2330" stroke="#d29922" stroke-width="2"/>
+    <text x="630" y="82" fill="#d29922" text-anchor="middle">H2a</text>
+    <text x="630" y="98" fill="#9aa7b4" text-anchor="middle">T5 · 04:12</text>
+    <rect x="570" y="180" width="120" height="52" rx="8" fill="#1c2330" stroke="#d29922" stroke-width="2"/>
+    <text x="630" y="202" fill="#d29922" text-anchor="middle">H2b</text>
+    <text x="630" y="218" fill="#9aa7b4" text-anchor="middle">T6 · 04:31</text>
+    <rect x="780" y="120" width="140" height="52" rx="8" fill="#10261a" stroke="#3fb950" stroke-width="2"/>
+    <text x="850" y="142" fill="#3fb950" text-anchor="middle">EXCHANGE E1</text>
+    <text x="850" y="158" fill="#9aa7b4" text-anchor="middle">T7 sweep · 03-04</text>
+  </g>
+  <g stroke="#f7931a" stroke-width="2" fill="none" marker-end="url(#ar2)">
+    <line x1="150" y1="146" x2="208" y2="146"/>
+    <line x1="330" y1="146" x2="388" y2="146"/>
+    <path d="M510 138 C 540 120, 545 95, 568 88"/>
+    <path d="M510 156 C 540 172, 545 195, 568 202"/>
+    <path d="M690 88 C 730 95, 750 120, 778 134"/>
+    <path d="M690 204 C 730 195, 750 165, 778 154"/>
+  </g>
+  <g font-size="11" fill="#e6edf3">
+    <text x="164" y="136">2.5000</text><text x="344" y="136">2.4994</text>
+    <text x="522" y="102">1.2497</text><text x="522" y="188">1.2494</text>
+    <text x="700" y="92">1.2495</text><text x="700" y="212">1.2492</text>
+  </g>
+  <g font-size="11">
+    <rect x="30" y="252" width="890" height="34" rx="8" fill="#161b22" stroke="#2d3748"/>
+    <text x="44" y="273" fill="#9aa7b4">Legend: orange=payment spine · blue=ransom addr (OP_RETURN tag decoded: "RANSOM-NOTE: dirty-88") · amber=suspect cluster {R1,H1a,H2a,H2b} · green=service cash-out → legal process</text>
+  </g>
+</svg>
+
+
+<h3>Exhibit B — the evidentiary table (what the prosecutor sees)</h3>
+<table>
+<tr><th>#</th><th>Finding</th><th>Type</th><th>Source</th></tr>
+<tr><td>1</td><td>Hospital sent 2.5000 BTC to bc1q…r1 on 03-02 21:14 UTC (tx a91f…c204)</td><td><b>Fact</b> (victim statement + on-chain record)</td><td>T1, wallet export, insurer report</td></tr>
+<tr><td>2</td><td>bc1q…r1 was fully spent 49 min later to bc1q…m8, with an OP_RETURN payload decoding to "RANSOM-NOTE: dirty-88"</td><td><b>Fact</b> + decoded artifact</td><td>T2 raw script</td></tr>
+<tr><td>3</td><td>Same key control over the chain R1 → H1a → (H2a, H2b)</td><td><b>Strong heuristic</b> (spending pattern, single-signer chain)</td><td>T2, T4</td></tr>
+<tr><td>4</td><td>1.2495 and 1.2492 BTC deposited to bc1q…ex, an address receiving from 40+ unrelated sources, consolidated next day</td><td><b>Strong heuristic</b> (service deposit pattern)</td><td>T5, T6, T7</td></tr>
+<tr><td>5</td><td>The string "dirty-88" matches the ransom note's victim identifier</td><td><b>Linkage inference</b> (to be corroborated)</td><td>Note photo vs decoded OP_RETURN</td></tr>
+</table>
+
+<h3>Debrief questions for the room (5 min)</h3>
+<div class="note">
+<ol>
+<li><b>Where exactly does on-chain work stop and police work begin?</b> <i>(At E1. The chain proves the deposit; the platform's records provide the identity.)</i></li>
+<li><b>Which single artifact most strongly links the chain to the ransom note?</b> <i>(The OP_RETURN payload — value never moved through it, but data did.)</i></li>
+<li><b>What breaks this case if the defense hires an expert?</b> <i>(Overclaimed heuristics — e.g., asserting H2a/H2b ownership without the single-signer evidence, or clustering a CoinJoin.)</i></li>
+<li><b>What do you request in legal process?</b> <i>(KYC for E1 deposit, withdrawals post-T7, IP/session logs, and — if available — the OP_RETURN-tag association with any account notes.)</i></li>
+</ol>
+</div>
+
+<div class="law"><b>The one-sentence takeaway:</b> follow the change spine, decode the data outputs, stop at the service door — then let legal process turn an address into a name.</div>
+<p style="text-align:right"><a href="07-quiz.html">Next: Quiz &amp; Wrap →</a></p>
+
+<div class="foot">Class 4 of 5 · Prerequisite: Class 3 (UTXO model) · All transactions, addresses and TXIDs in this course are <b>fabricated sample data</b> for training purposes. Nothing here references real persons or real on-chain activity.</div>
+</main>
+</body>
+</html>

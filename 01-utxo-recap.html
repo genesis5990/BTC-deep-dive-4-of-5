@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1 · UTXO Recap · Bitcoin Tracing (Class 4 of 5)</title>
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2330;--ink:#e6edf3;--mut:#9aa7b4;
+  --acc:#f7931a;--acc2:#58a6ff;--good:#3fb950;--bad:#f85149;--warn:#d29922;--line:#2d3748;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65}
+  a{color:var(--acc2)}
+  header.top{background:linear-gradient(90deg,#11161d,#1a1206);border-bottom:2px solid var(--acc);padding:14px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  header.top .btc{width:34px;height:34px;border-radius:50%;background:var(--acc);color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px}
+  header.top h1{font-size:1.05rem;margin:0;font-weight:600;letter-spacing:.3px}
+  header.top .tag{color:var(--mut);font-size:.8rem}
+  nav.tabs{background:var(--panel);padding:8px 20px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  nav.tabs a{padding:6px 12px;border-radius:6px;text-decoration:none;color:var(--mut);font-size:.85rem;border:1px solid transparent}
+  nav.tabs a:hover{color:var(--ink)}
+  nav.tabs a.on{background:var(--panel2);color:var(--acc);border-color:var(--line)}
+  main{max-width:980px;margin:0 auto;padding:26px 22px 80px}
+  h2{border-left:4px solid var(--acc);padding-left:12px;margin-top:36px}
+  h3{color:var(--acc);margin-top:28px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:16px 0}
+  .note{border-left:4px solid var(--acc2);background:#12233a;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .warn{border-left:4px solid var(--warn);background:#2a2114;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .law{border-left:4px solid var(--good);background:#10261a;padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  code,kbd{background:#0b0f14;border:1px solid var(--line);border-radius:5px;padding:1px 7px;font-family:Consolas,Menlo,monospace;font-size:.88em;color:#ffd9a0}
+  pre{background:#0b0f14;border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:Consolas,Menlo,monospace;font-size:.85rem;line-height:1.55;color:#cfe3ff}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.88rem}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:var(--acc)}
+  tr:nth-child(even){background:#11161f}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.75rem;border:1px solid var(--line);background:var(--panel2)}
+  .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .flow .box{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:.85rem;font-family:Consolas,monospace}
+  .flow .arr{color:var(--acc);font-weight:700}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.cols{grid-template-columns:1fr}}
+  .btn{background:var(--acc);color:#111;border:0;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;font-size:.9rem}
+  .btn.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+  .opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:10px 14px;margin:8px 0;cursor:pointer;font-size:.92rem}
+  .opt:hover{border-color:var(--acc)}
+  .opt.correct{border-color:var(--good);background:#10261a}
+  .opt.wrong{border-color:var(--bad);background:#2a1517}
+  .q{margin:20px 0;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+  .q .fb{font-size:.85rem;margin-top:8px;display:none}
+  .q .fb.ok{display:block;color:var(--good)}
+  .q .fb.no{display:block;color:var(--bad)}
+  .foot{color:var(--mut);font-size:.8rem;margin-top:50px;border-top:1px solid var(--line);padding-top:14px}
+  .kicker{color:var(--acc);text-transform:uppercase;letter-spacing:2px;font-size:.72rem;font-weight:700}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:760px){.grid3{grid-template-columns:1fr}}
+  svg text{font-family:Consolas,Menlo,monospace}
+  .legend span{margin-right:14px;font-size:.8rem}
+  .dot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  .step{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:8px;padding:12px 16px;margin:10px 0}
+  .step b{color:var(--acc2)}
+  .clock{color:var(--warn);font-weight:700;font-family:Consolas,monospace}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="btc">₿</div>
+  <div>
+    <h1>Bitcoin Investigations — Class 4 of 5: Tracing Transactions &amp; OP_RETURN</h1>
+    <div class="tag">Law Enforcement Training · Sample data only · Tool-agnostic</div>
+  </div>
+</header>
+<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="on">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a></nav>
+<main>
+
+<p class="kicker">Segment 1 · 8 minutes</p>
+<h2>The UTXO Mental Model (Recap)</h2>
+<p>Class 3 established the single most important idea in Bitcoin tracing:</p>
+<div class="card">
+<b style="color:var(--acc)">Bitcoin has no accounts and no balances on-chain. It has only coins — Unspent Transaction Outputs (UTXOs).</b>
+<ul style="margin-top:10px">
+<li>Every UTXO is locked to a <b>locking script</b> (scriptPubKey) — usually "whoever can sign for address X".</li>
+<li>Every transaction <b>destroys</b> one or more UTXOs entirely as inputs, and <b>creates</b> brand-new UTXOs as outputs.</li>
+<li>Every satoshi of every input must go somewhere: recipient outputs, a <b>change</b> output back to the sender, or the <b>miner fee</b>.</li>
+<li>UTXOs can only be spent <b>once, whole, by the holder of the key</b>. Value is never "moved and left behind" — it is always re-minted forward.</li>
+</ul>
+</div>
+
+<h3>Why this makes tracing possible</h3>
+<div class="law">
+Because inputs must be destroyed whole, <b>value on a blockchain cannot teleport</b>. Every satoshi arrives at its current location through an unbroken, public, timestamped chain of transactions. The ledger is complete back to the coinbase of every coin. That completeness is the investigator's best friend: <b>if you can find one transaction tied to your subject, you can in principle follow the value forward and backward across the entire history.</b>
+</div>
+
+<h3>60-second warm-up (ask the room)</h3>
+<div class="note">
+<ol>
+<li>A suspect's wallet shows "balance 2.4 BTC". What does the blockchain actually store? <i>(Answer: a set of UTXOs summing to 2.4 BTC — the "balance" is a wallet-computed view.)</i></li>
+<li>A transaction has 2 inputs and 3 outputs. One output goes to a merchant. What's a plausible role for each remaining output? <i>(Change to sender + possibly an OP_RETURN/data output, or a second payment.)</i></li>
+<li>Can a spent UTXO ever be spent again? <i>(No — double-spend is exactly what consensus prevents.)</i></li>
+</ol>
+</div>
+
+<h3>The tracing mindset you will use all hour</h3>
+<div class="flow">
+  <span class="box">Find ANY tx linked to subject</span><span class="arr">→</span>
+  <span class="box">Identify outputs (payment? change? data?)</span><span class="arr">→</span>
+  <span class="box">Follow the UTXOs forward</span><span class="arr">→</span>
+  <span class="box">Cluster addresses via heuristics</span><span class="arr">→</span>
+  <span class="box">Hit a service (exchange/merchant/mixer)</span><span class="arr">→</span>
+  <span class="box">Legal process for identity</span>
+</div>
+<div class="warn"><b>Reality check:</b> the chain gives you <i>addresses and flows</i>, never names. Identity comes from off-chain points: exchanges, merchants, ISP logs, wallet backups, statements. Your trace tells you <i>where to subpoena</i>.</div>
+<p style="text-align:right"><a href="02-heuristics.html">Next: Tracing Heuristics →</a></p>
+
+<div class="foot">Class 4 of 5 · Prerequisite: Class 3 (UTXO model) · All transactions, addresses and TXIDs in this course are <b>fabricated sample data</b> for training purposes. Nothing here references real persons or real on-chain activity.</div>
+</main>
+</body>
+</html>
