@@ -57,6 +57,22 @@
   .step{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:8px;padding:12px 16px;margin:10px 0}
   .step b{color:var(--acc2)}
   .clock{color:var(--warn);font-weight:700;font-family:Consolas,monospace}
+  details.key{border:1px dashed var(--warn);border-radius:10px;padding:14px 18px;margin:22px 0;background:#221a0e}
+  details.key summary{cursor:pointer;color:var(--warn);font-weight:700}
+  details.key table{font-size:.85rem}
+  .printbar{position:sticky;top:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:14px 0;z-index:5}
+  .writein{width:100%;border:1px solid #444;border-radius:4px;height:2.2em;background:transparent}
+  .blank{display:inline-block;border-bottom:1px solid #666;min-width:170px}
+  .sketchbox{border:1px dashed #555;height:280px;border-radius:6px;margin-top:6px}
+  @media print{
+    body{background:#fff;color:#000}
+    nav.tabs,header.top,.printbar,.foot,details.key{display:none !important}
+    main{max-width:100%;padding:0}
+    .card,.step,.note,.law,.warn{border:1px solid #999;background:#fff;color:#000}
+    h2,h3,b,th,td,code,kbd,pre{color:#000 !important;background:#fff !important}
+    table,pre,.step,.q{page-break-inside:avoid}
+    a{color:#000;text-decoration:none}
+  }
 </style>
 
 </head>
@@ -68,7 +84,7 @@
     <div class="tag">Law Enforcement Training · Sample data only · Tool-agnostic</div>
   </div>
 </header>
-<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="on">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a></nav>
+<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="on">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a><a href="08-worksheet.html" class="">8 · Worksheet</a></nav>
 <main>
 
 <p class="kicker">Segment 5 (cont.) · capstone</p>
@@ -125,10 +141,18 @@
 <table>
 <tr><th>#</th><th>Finding</th><th>Type</th><th>Source</th></tr>
 <tr><td>1</td><td>Hospital sent 2.5000 BTC to bc1q…r1 on 03-02 21:14 UTC (tx a91f…c204)</td><td><b>Fact</b> (victim statement + on-chain record)</td><td>T1, wallet export, insurer report</td></tr>
-<tr><td>2</td><td>bc1q…r1 was fully spent 49 min later to bc1q…m8, with an OP_RETURN payload decoding to "RANSOM-NOTE: dirty-88"</td><td><b>Fact</b> + decoded artifact</td><td>T2 raw script</td></tr>
+<tr><td>2</td><td>bc1q…r1 was fully spent 49 min later to bc1q…m8, with an OP_RETURN payload decoding to "RANSOM-NOTE: dirty-88"</td><td><b>Fact</b> + decoded artifact</td><td>T2 raw script (export hashed at collection)</td></tr>
 <tr><td>3</td><td>Same key control over the chain R1 → H1a → (H2a, H2b)</td><td><b>Strong heuristic</b> (spending pattern, single-signer chain)</td><td>T2, T4</td></tr>
 <tr><td>4</td><td>1.2495 and 1.2492 BTC deposited to bc1q…ex, an address receiving from 40+ unrelated sources, consolidated next day</td><td><b>Strong heuristic</b> (service deposit pattern)</td><td>T5, T6, T7</td></tr>
 <tr><td>5</td><td>The string "dirty-88" matches the ransom note's victim identifier</td><td><b>Linkage inference</b> (to be corroborated)</td><td>Note photo vs decoded OP_RETURN</td></tr>
+</table>
+
+<h3>Exhibit C — preservation log (excerpt, what the hash column looks like)</h3>
+<table>
+<tr><th>File</th><th>Collected (UTC)</th><th>Tool + version</th><th>SHA-256 (first 16)</th><th>By</th></tr>
+<tr><td>T1-T7_export.csv</td><td>03-05 14:22</td><td>explorer web UI (screenshot + CSV)</td><td><code>3b7a9f02c1d84e55</code>…</td><td>JD-12</td></tr>
+<tr><td>ransom7_graph.png</td><td>03-05 14:35</td><td>graphing tool v2.4.1</td><td><code>9c41be77a0f2381d</code>…</td><td>JD-12</td></tr>
+<tr><td>T2_raw_script.txt</td><td>03-05 14:40</td><td>explorer "raw tx" view</td><td><code>77aa10c4b9e25f60</code>…</td><td>JD-12</td></tr>
 </table>
 
 <h3>Debrief questions for the room (5 min)</h3>
@@ -138,10 +162,11 @@
 <li><b>Which single artifact most strongly links the chain to the ransom note?</b> <i>(The OP_RETURN payload — value never moved through it, but data did.)</i></li>
 <li><b>What breaks this case if the defense hires an expert?</b> <i>(Overclaimed heuristics — e.g., asserting H2a/H2b ownership without the single-signer evidence, or clustering a CoinJoin.)</i></li>
 <li><b>What do you request in legal process?</b> <i>(KYC for E1 deposit, withdrawals post-T7, IP/session logs, and — if available — the OP_RETURN-tag association with any account notes.)</i></li>
+<li><b>If the defense claims the CSV export was edited, which column of Exhibit C answers them — and how?</b> <i>(The SHA-256 column: re-hash the file in open court, compare fingerprints.)</i></li>
 </ol>
 </div>
 
-<div class="law"><b>The one-sentence takeaway:</b> follow the change spine, decode the data outputs, stop at the service door — then let legal process turn an address into a name.</div>
+<div class="law"><b>The one-sentence takeaway:</b> follow the change spine, decode the data outputs, hash everything you export, stop at the service door — then let legal process turn an address into a name.</div>
 <p style="text-align:right"><a href="07-quiz.html">Next: Quiz &amp; Wrap →</a></p>
 
 <div class="foot">Class 4 of 5 · Prerequisite: Class 3 (UTXO model) · All transactions, addresses and TXIDs in this course are <b>fabricated sample data</b> for training purposes. Nothing here references real persons or real on-chain activity.</div>

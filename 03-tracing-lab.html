@@ -57,6 +57,22 @@
   .step{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:8px;padding:12px 16px;margin:10px 0}
   .step b{color:var(--acc2)}
   .clock{color:var(--warn);font-weight:700;font-family:Consolas,monospace}
+  details.key{border:1px dashed var(--warn);border-radius:10px;padding:14px 18px;margin:22px 0;background:#221a0e}
+  details.key summary{cursor:pointer;color:var(--warn);font-weight:700}
+  details.key table{font-size:.85rem}
+  .printbar{position:sticky;top:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:14px 0;z-index:5}
+  .writein{width:100%;border:1px solid #444;border-radius:4px;height:2.2em;background:transparent}
+  .blank{display:inline-block;border-bottom:1px solid #666;min-width:170px}
+  .sketchbox{border:1px dashed #555;height:280px;border-radius:6px;margin-top:6px}
+  @media print{
+    body{background:#fff;color:#000}
+    nav.tabs,header.top,.printbar,.foot,details.key{display:none !important}
+    main{max-width:100%;padding:0}
+    .card,.step,.note,.law,.warn{border:1px solid #999;background:#fff;color:#000}
+    h2,h3,b,th,td,code,kbd,pre{color:#000 !important;background:#fff !important}
+    table,pre,.step,.q{page-break-inside:avoid}
+    a{color:#000;text-decoration:none}
+  }
 </style>
 
 </head>
@@ -68,12 +84,12 @@
     <div class="tag">Law Enforcement Training · Sample data only · Tool-agnostic</div>
   </div>
 </header>
-<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="on">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a></nav>
+<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="on">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a><a href="08-worksheet.html" class="">8 · Worksheet</a></nav>
 <main>
 
 <p class="kicker">Segment 3 · 20 minutes — hands-on</p>
 <h2>Tracing Lab: Sample Dataset "RANSOM-7"</h2>
-<div class="warn"><b>Fabricated data:</b> every TXID, address, and timestamp below is invented for training. Real TXIDs are 64 hex characters; we truncate for readability and note the full-length form in your worksheet. <b>Do not run these against a live explorer.</b></div>
+<div class="warn"><b>Fabricated data:</b> every TXID, address, and timestamp below is invented for training. Real TXIDs are 64 hex characters; we truncate for readability and you record the full-length form in your worksheet. <b>Do not run these against a live explorer.</b> A printable version of this exercise is on <a href="08-worksheet.html">page 8</a>.</div>
 
 <h3>Scenario briefing (read aloud)</h3>
 <div class="card">
@@ -86,7 +102,6 @@
   <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
     <path d="M0,0 L7,3 L0,6 z" fill="#f7931a"/></marker></defs>
   <text x="16" y="24" fill="#9aa7b4" font-size="12">SCENARIO GRAPH — sample data (fabricated)</text>
-  <!-- nodes -->
   <g font-size="12">
     <rect x="30" y="90" width="150" height="56" rx="8" fill="#1c2330" stroke="#f7931a"/>
     <text x="105" y="112" fill="#f7931a" text-anchor="middle">VICTIM (V)</text>
@@ -145,17 +160,7 @@
 <div class="step"><b>Step 3 · The trap row (T3).</b> T3 claims to spend R1's UTXO — impossible; it's already spent in T2. On a real explorer this row simply wouldn't exist. Teaching point: <b>UTXOs are spent exactly once.</b> If your tool ever appears to show two spends, verify before you conclude anything.</div>
 <div class="step"><b>Step 4 · The split.</b> T4 sends ~50/50 to two fresh addresses H2a/H2b, created and signed in one transaction → same controller. Your working cluster: <b>{R1, H1a, H2a, H2b}</b>.</div>
 <div class="step"><b>Step 5 · Cash-out.</b> T5 and T6 both land at bc1q…ex within 19 minutes. That address receives from 40+ unrelated sources → classic <b>service deposit address</b> (Heuristic 3). T7 is the service's internal consolidation sweep. <b>End of the on-chain trail.</b></div>
-<div class="step"><b>Step 6 · Legal handoff.</b> The blockchain can't name the person — but the service can. Preserve T1–T7 records, timestamps, amounts, and your heuristic notes. Legal-process target: the platform's KYC records for deposit address bc1q…ex, withdrawal history tied to the T7 consolidation, and session/IP logs. That is how a trace becomes a suspect.</div>
-
-<h3>Lab worksheet (copy into your notebook)</h3>
-<pre>CASE ______   ANALYST ______   DATE ______
-Hop | TxID (full 64 hex) | UTC time | From (addr/cluster) | To (addr/cluster) | Amount BTC | Heuristic used | Confidence (fact/strong/inference)
-1   |
-2   |
-3   |
-...
-Cash-out point: ______________________  Legal-process target: ______________________
-Total value traced: ______ BTC   Fees burned: ______ BTC   Longest dwell time: ______</pre>
+<div class="step"><b>Step 6 · Legal handoff.</b> The blockchain can't name the person — but the service can. Preserve T1–T7 records, timestamps, amounts, and your heuristic notes (see the hashing box on page 5). Legal-process target: the platform's KYC records for deposit address bc1q…ex, withdrawal history tied to the T7 consolidation, and session/IP logs. That is how a trace becomes a suspect.</div>
 
 <div class="note"><b>Timing insight worth noting in your report:</b> victim → service in ~7 hours, with short dwell times at each hop (49 min, ~2.5 h, 19 min). Fast, scripted movement is a hallmark of a payout pipeline, not a personal wallet.</div>
 <p style="text-align:right"><a href="04-op-return.html">Next: OP_RETURN →</a></p>
