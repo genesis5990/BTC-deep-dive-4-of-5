@@ -57,6 +57,22 @@
   .step{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:8px;padding:12px 16px;margin:10px 0}
   .step b{color:var(--acc2)}
   .clock{color:var(--warn);font-weight:700;font-family:Consolas,monospace}
+  details.key{border:1px dashed var(--warn);border-radius:10px;padding:14px 18px;margin:22px 0;background:#221a0e}
+  details.key summary{cursor:pointer;color:var(--warn);font-weight:700}
+  details.key table{font-size:.85rem}
+  .printbar{position:sticky;top:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:14px 0;z-index:5}
+  .writein{width:100%;border:1px solid #444;border-radius:4px;height:2.2em;background:transparent}
+  .blank{display:inline-block;border-bottom:1px solid #666;min-width:170px}
+  .sketchbox{border:1px dashed #555;height:280px;border-radius:6px;margin-top:6px}
+  @media print{
+    body{background:#fff;color:#000}
+    nav.tabs,header.top,.printbar,.foot,details.key{display:none !important}
+    main{max-width:100%;padding:0}
+    .card,.step,.note,.law,.warn{border:1px solid #999;background:#fff;color:#000}
+    h2,h3,b,th,td,code,kbd,pre{color:#000 !important;background:#fff !important}
+    table,pre,.step,.q{page-break-inside:avoid}
+    a{color:#000;text-decoration:none}
+  }
 </style>
 
 </head>
@@ -68,7 +84,7 @@
     <div class="tag">Law Enforcement Training · Sample data only · Tool-agnostic</div>
   </div>
 </header>
-<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="on">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a></nav>
+<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="on">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a><a href="08-worksheet.html" class="">8 · Worksheet</a></nav>
 <main>
 
 <p class="kicker">Segment 5 · 6 minutes</p>
@@ -77,12 +93,31 @@
 
 <h3>The 7-step visual tracing workflow</h3>
 <div class="step"><b>1 · Scope.</b> Define the question: "trace ransom payment T1 to cash-out" — not "map everything the suspect ever touched". Unscoped graphs drown analysts.</div>
-<div class="step"><b>2 · Anchor &amp; preserve.</b> Record the starting txid (full 64 hex), block height, timestamp, and a screenshot <i>before</i> expanding anything. Hash your export files; note tool and version. This is your chain of custody.</div>
+<div class="step"><b>2 · Anchor &amp; preserve.</b> Record the starting txid (full 64 hex), block height, timestamp, and a screenshot <i>before</i> expanding anything. Then <b>hash your export files</b> (box below) and note tool name + version. This is your chain of custody.</div>
 <div class="step"><b>3 · Expand one hop at a time.</b> Add only the addresses you can justify (heuristics from segment 2). After every expansion ask: <i>does this node carry my value forward?</i> If not, park it.</div>
 <div class="step"><b>4 · Color by role, not by address.</b> One color per role: victim (orange), suspect cluster (blue), change spine (highlighted), service/cash-out (green), data outputs (grey). Consistent colors across every exhibit.</div>
 <div class="step"><b>5 · Follow the change spine first.</b> The single highest-value habit: trace change outputs forward before fanning out. Change is the suspect's own footprint; the peel chain will lead you to the cash-out faster than any spray of outputs.</div>
 <div class="step"><b>6 · Annotate on the graph.</b> Put txids, timestamps, and amounts on edges. Mark heuristic strength per node (fact / strong / inference). If a colleague (or a defense expert) can't reproduce your reading of the graph from the graph alone, it isn't done.</div>
 <div class="step"><b>7 · Export &amp; report.</b> Export the graph image plus the underlying table (same worksheet as the lab). Statement-ready sentence pattern: <i>"On 03-03 at 04:12 UTC, UTXO …p2 was spent in tx …e908, transferring 1.2495 BTC to address …ex, consistent with a service deposit address receiving from 40+ sources."</i></div>
+
+<h3>📦 Step 2 explained: "Hash your export files" — what that actually means</h3>
+<div class="card">
+<p>A <b>hash</b> (e.g., SHA-256) is a digital fingerprint of a file. Run any file through a hash function and you get a unique string of characters. Change <i>even one byte</i> — a single digit in a TXID — and the fingerprint comes out completely different. Hashing your exports means: <b>lock the exact bytes you relied on, provably, the moment you collect them.</b></p>
+<p><b>The 30-second habit, concretely:</b></p>
+<pre># Windows (built-in, no install):
+certutil -hashfile T1-T7_export.csv SHA256
+
+# macOS / Linux (built-in):
+shasum -a 256 T1-T7_export.csv
+# (or) sha256sum T1-T7_export.csv</pre>
+<p>You will get something like <code>3b7a9f…e4c1  T1-T7_export.csv</code>. Write that string in your worksheet next to the file name, the collection date/time (UTC), the tool + version, and your initials. Later, anyone — a supervisor, a prosecutor, a defense expert — can re-run the same command on the file and confirm it produces the <i>identical</i> fingerprint.</p>
+<p><b>What this buys you in court:</b></p>
+<ul>
+<li><b>Integrity proof</b> — the export has not been altered since collection, because any edit would change the fingerprint. This defeats "the analyst edited the spreadsheet" challenges.</li>
+<li><b>Chain of custody</b> — combined with your date/time/tool/version notes, the hash shows <i>what</i> was collected, <i>when</i>, and <i>how</i>.</li>
+</ul>
+<div class="warn" style="margin:10px 0 0"><b>Two things hashing does NOT prove:</b> (1) <i>accuracy</i> — a hash proves the file is unchanged, not that the explorer showed true data (that's why you record tool + version, so the collection method itself can be examined); and (2) <i>who made it</i> — anyone with the file can recompute its hash. Integrity ≠ authenticity of source.</div>
+</div>
 
 
 <svg viewBox="0 0 920 240" width="100%" style="background:#0b0f14;border:1px solid var(--line);border-radius:8px">
@@ -140,11 +175,11 @@
 <li>Treating every output as suspect-controlled (miss the service deposit)</li>
 <li>Clustering CoinJoin inputs → false attribution, case damage</li>
 <li>No timestamps on edges → can't show sequencing in court</li>
-<li>Graph with no source table → not reproducible</li>
+<li>Graph with no source table and no hashes → not reproducible</li>
 </ul></div>
 </div>
 
-<div class="law"><b>Court-ready standard:</b> your visual is an exhibit; the worksheet table is the evidence. The picture persuades, the table proves. Always serve both.</div>
+<div class="law"><b>Court-ready standard:</b> your visual is an exhibit; the worksheet table is the evidence; the hash log is the lock. The picture persuades, the table proves, the fingerprint guarantees nothing changed. Always serve all three.</div>
 <p style="text-align:right"><a href="06-case-study.html">Next: Case Study →</a></p>
 
 <div class="foot">Class 4 of 5 · Prerequisite: Class 3 (UTXO model) · All transactions, addresses and TXIDs in this course are <b>fabricated sample data</b> for training purposes. Nothing here references real persons or real on-chain activity.</div>

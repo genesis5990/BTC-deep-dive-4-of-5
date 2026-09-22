@@ -57,6 +57,22 @@
   .step{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:8px;padding:12px 16px;margin:10px 0}
   .step b{color:var(--acc2)}
   .clock{color:var(--warn);font-weight:700;font-family:Consolas,monospace}
+  details.key{border:1px dashed var(--warn);border-radius:10px;padding:14px 18px;margin:22px 0;background:#221a0e}
+  details.key summary{cursor:pointer;color:var(--warn);font-weight:700}
+  details.key table{font-size:.85rem}
+  .printbar{position:sticky;top:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:14px 0;z-index:5}
+  .writein{width:100%;border:1px solid #444;border-radius:4px;height:2.2em;background:transparent}
+  .blank{display:inline-block;border-bottom:1px solid #666;min-width:170px}
+  .sketchbox{border:1px dashed #555;height:280px;border-radius:6px;margin-top:6px}
+  @media print{
+    body{background:#fff;color:#000}
+    nav.tabs,header.top,.printbar,.foot,details.key{display:none !important}
+    main{max-width:100%;padding:0}
+    .card,.step,.note,.law,.warn{border:1px solid #999;background:#fff;color:#000}
+    h2,h3,b,th,td,code,kbd,pre{color:#000 !important;background:#fff !important}
+    table,pre,.step,.q{page-break-inside:avoid}
+    a{color:#000;text-decoration:none}
+  }
 </style>
 
 </head>
@@ -68,7 +84,7 @@
     <div class="tag">Law Enforcement Training · Sample data only · Tool-agnostic</div>
   </div>
 </header>
-<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="on">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a></nav>
+<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="on">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a><a href="08-worksheet.html" class="">8 · Worksheet</a></nav>
 <main>
 
 <p class="kicker">Segment 1 · 8 minutes</p>

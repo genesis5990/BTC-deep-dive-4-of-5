@@ -57,6 +57,22 @@
   .step{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:8px;padding:12px 16px;margin:10px 0}
   .step b{color:var(--acc2)}
   .clock{color:var(--warn);font-weight:700;font-family:Consolas,monospace}
+  details.key{border:1px dashed var(--warn);border-radius:10px;padding:14px 18px;margin:22px 0;background:#221a0e}
+  details.key summary{cursor:pointer;color:var(--warn);font-weight:700}
+  details.key table{font-size:.85rem}
+  .printbar{position:sticky;top:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:14px 0;z-index:5}
+  .writein{width:100%;border:1px solid #444;border-radius:4px;height:2.2em;background:transparent}
+  .blank{display:inline-block;border-bottom:1px solid #666;min-width:170px}
+  .sketchbox{border:1px dashed #555;height:280px;border-radius:6px;margin-top:6px}
+  @media print{
+    body{background:#fff;color:#000}
+    nav.tabs,header.top,.printbar,.foot,details.key{display:none !important}
+    main{max-width:100%;padding:0}
+    .card,.step,.note,.law,.warn{border:1px solid #999;background:#fff;color:#000}
+    h2,h3,b,th,td,code,kbd,pre{color:#000 !important;background:#fff !important}
+    table,pre,.step,.q{page-break-inside:avoid}
+    a{color:#000;text-decoration:none}
+  }
 </style>
 
 </head>
@@ -68,7 +84,7 @@
     <div class="tag">Law Enforcement Training · Sample data only · Tool-agnostic</div>
   </div>
 </header>
-<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="on">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a></nav>
+<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="on">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a><a href="08-worksheet.html" class="">8 · Worksheet</a></nav>
 <main>
 
 <p class="kicker">Segment 4 · 10 minutes</p>
@@ -113,20 +129,20 @@
 <pre>hex: 52414e534f4d2d4e4f54453a2064697274792d3838
 R A N S O M - N O T E :  ␣ d i r t y - 8 8</pre>
 <p>Every pair of hex digits = one ASCII character. Even with no tools: <code>52</code>=R, <code>41</code>=A, <code>4e</code>=N… decodes to <b>"RANSOM-NOTE: dirty-88"</b> — a tag linking this transaction to the note the hospital received. That single unspendable output now ties the on-chain hop to the offender's own message.</p>
-<p><b>Quick decoder for class:</b> open any hex-to-ASCII converter offline, or use <code>python3 -c "print(bytes.fromhex('52414e...').decode())"</code>. No internet needed.</p>
+<p><b>Quick decoder for class:</b> open any hex-to-ASCII converter offline, or use <code>python3 -c "print(bytes.fromhex('52414e534f4d2d4e4f54453a2064697274792d3838').decode())"</code>. No internet needed. There is a decode-practice grid on the <a href="08-worksheet.html">printable worksheet</a>.</p>
 </div>
 
 <h3>Field guide: OP_RETURN in your casework</h3>
 <div class="law">
 <ol>
 <li><b>Spot it:</b> output with value 0 and script type shown as OP_RETURN/NULldata in explorers. It never moves funds — never count it in your value-traced total.</li>
-<li><b>Decode it:</b> copy the payload hex exactly; convert to ASCII; if binary, look for known protocol markers. Photograph/screenshot the raw script in your preservation.</li>
+<li><b>Decode it:</b> copy the payload hex exactly; convert to ASCII; if binary, look for known protocol markers. Photograph/screenshot the raw script in your preservation, and hash the export (page 5).</li>
 <li><b>Correlate it:</b> strings may match ransom notes, filenames, wallet labels, or known protocol tags. A match can be your strongest <i>linkage</i> evidence even when the money path is obscured.</li>
-<li><b>Respect the limits:</b> 80 bytes max per output — larger messages are split across multiple OP_RETURNs (often in consecutive transactions or chained outputs). If you see <code>OP_RETURN ... PART 1/3</code>, keep pulling the thread.</li>
+<li><b>Respect the limits:</b> 80 bytes max per output — larger messages are split across multiple OP_RETURNs (often in consecutive transactions or chained outputs). If you see <code>PART 1/3</code>, keep pulling the thread.</li>
 <li><b>Don't overclaim:</b> anyone can write anything. An OP_RETURN "message from the suspect" proves whoever <i>signed that transaction</i> wrote it — tie it back to key control before attributing it to a person.</li>
 </ol></div>
 
-<div class="warn"><b>Anti-patterns to avoid:</b> OP_RETURN outputs are <i>not</i> a hiding place for value (nothing can ever be spent from them) and <i>not</i> proof that data was "encrypted" (most payloads are plaintext or trivially encoded). Also note: in 2025 some miners began accepting larger non-standard OP_RETURN payloads — if you see one over 80 bytes, document it as non-standard rather than impossible.</div>
+<div class="warn"><b>Anti-patterns to avoid:</b> OP_RETURN outputs are <i>not</i> a hiding place for value (nothing can ever be spent from them) and <i>not</i> proof that data was "encrypted" (most payloads are plaintext or trivially encoded). Also note: some miners now accept larger non-standard OP_RETURN payloads — if you see one over 80 bytes, document it as non-standard rather than impossible.</div>
 <p style="text-align:right"><a href="05-visual-analysis.html">Next: Visual Analysis →</a></p>
 
 <div class="foot">Class 4 of 5 · Prerequisite: Class 3 (UTXO model) · All transactions, addresses and TXIDs in this course are <b>fabricated sample data</b> for training purposes. Nothing here references real persons or real on-chain activity.</div>

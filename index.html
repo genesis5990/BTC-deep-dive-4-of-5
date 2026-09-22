@@ -57,6 +57,22 @@
   .step{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:8px;padding:12px 16px;margin:10px 0}
   .step b{color:var(--acc2)}
   .clock{color:var(--warn);font-weight:700;font-family:Consolas,monospace}
+  details.key{border:1px dashed var(--warn);border-radius:10px;padding:14px 18px;margin:22px 0;background:#221a0e}
+  details.key summary{cursor:pointer;color:var(--warn);font-weight:700}
+  details.key table{font-size:.85rem}
+  .printbar{position:sticky;top:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:14px 0;z-index:5}
+  .writein{width:100%;border:1px solid #444;border-radius:4px;height:2.2em;background:transparent}
+  .blank{display:inline-block;border-bottom:1px solid #666;min-width:170px}
+  .sketchbox{border:1px dashed #555;height:280px;border-radius:6px;margin-top:6px}
+  @media print{
+    body{background:#fff;color:#000}
+    nav.tabs,header.top,.printbar,.foot,details.key{display:none !important}
+    main{max-width:100%;padding:0}
+    .card,.step,.note,.law,.warn{border:1px solid #999;background:#fff;color:#000}
+    h2,h3,b,th,td,code,kbd,pre{color:#000 !important;background:#fff !important}
+    table,pre,.step,.q{page-break-inside:avoid}
+    a{color:#000;text-decoration:none}
+  }
 </style>
 
 </head>
@@ -68,7 +84,7 @@
     <div class="tag">Law Enforcement Training · Sample data only · Tool-agnostic</div>
   </div>
 </header>
-<nav class="tabs"><a href="index.html" class="on">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a></nav>
+<nav class="tabs"><a href="index.html" class="on">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="">7 · Quiz & Wrap</a><a href="08-worksheet.html" class="">8 · Worksheet</a></nav>
 <main>
 
 <p class="kicker">Course navigation</p>
@@ -80,7 +96,7 @@
 <li><b>Tracing heuristics</b> — the standard assumptions that make clustering possible</li>
 <li><b>A hands-on tracing lab</b> — step-by-step tracing of a fabricated transaction chain, with worksheets you can reproduce live</li>
 <li><b>OP_RETURN</b> — the provably-unspendable output type that carries <i>data</i>, and what that data can tell an investigator</li>
-<li><b>Visual analysis workflow</b> — a tool-agnostic method for turning raw transaction data into an evidentiary graph</li>
+<li><b>Visual analysis workflow</b> — a tool-agnostic method for turning raw transaction data into an evidentiary graph, including how to <b>hash and preserve</b> your exports</li>
 <li><b>A capstone case study</b> — a ransom payment followed from victim to cash-out</li>
 </ul>
 </div>
@@ -99,11 +115,20 @@
 <tr><th>Time</th><th>Segment</th><th>Page</th></tr>
 <tr><td class="clock">0:00–0:08</td><td>Warm-up recap: the UTXO mental model</td><td><a href="01-utxo-recap.html">1 · UTXO Recap</a></td></tr>
 <tr><td class="clock">0:08–0:20</td><td>Tracing heuristics every investigator must know</td><td><a href="02-heuristics.html">2 · Tracing Heuristics</a></td></tr>
-<tr><td class="clock">0:20–0:40</td><td>Hands-on lab: trace the sample dataset on paper/screen</td><td><a href="03-tracing-lab.html">3 · Tracing Lab</a></td></tr>
+<tr><td class="clock">0:20–0:40</td><td>Hands-on lab: trace the sample dataset (worksheet on page 8)</td><td><a href="03-tracing-lab.html">3 · Tracing Lab</a></td></tr>
 <tr><td class="clock">0:40–0:50</td><td>OP_RETURN: data on the chain</td><td><a href="04-op-return.html">4 · OP_RETURN</a></td></tr>
 <tr><td class="clock">0:50–0:56</td><td>Visual analysis workflow & case study</td><td><a href="05-visual-analysis.html">5 · Visual Analysis</a> · <a href="06-case-study.html">6 · Case Study</a></td></tr>
-<tr><td class="clock">0:56–1:00</td><td>Quiz, wrap-up, preview of Class 5</td><td><a href="07-quiz.html">7 · Quiz &amp; Wrap</a></td></tr>
+<tr><td class="clock">0:56–1:00</td><td>Quiz (self-scoring; instructor key behind toggle), wrap-up, preview of Class 5</td><td><a href="07-quiz.html">7 · Quiz &amp; Wrap</a></td></tr>
 </table>
+
+<h3>New in this version of the course</h3>
+<div class="note">
+<ul>
+<li><b>Evidence hashing how-to</b> — a worked box on page 5 showing exactly how to fingerprint your exported files (Windows/Mac/Linux commands) and why courts care.</li>
+<li><b>Printable worksheet page</b> — <a href="08-worksheet.html">page 8</a> is a print-ready field worksheet (hop log, hash preservation log, OP_RETURN decode grid, graph sketch area, legal-process checklist). Use the Print button; the navigation and answer keys are automatically hidden on paper.</li>
+<li><b>Instructor answer keys</b> — hidden behind a toggle on the quiz page and safe from printing.</li>
+</ul>
+</div>
 
 <h3>Learning objectives</h3>
 <div class="law">By the end of this hour, each participant will be able to:
@@ -112,6 +137,7 @@
 <li>Apply the three core heuristics: common-input ownership, change detection, and address reuse.</li>
 <li>Walk a fabricated multi-hop chain from a victim payment to a cash-out point and document each hop.</li>
 <li>Recognize OP_RETURN outputs, decode what they typically carry, and describe their investigative value and limits.</li>
+<li>Hash and preserve exported evidence so its integrity can be proven in court.</li>
 <li>Produce a clean, defensible visual graph of a traced flow using any explorer + graphing tool.</li>
 </ol></div>
 

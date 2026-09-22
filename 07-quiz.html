@@ -57,6 +57,22 @@
   .step{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:8px;padding:12px 16px;margin:10px 0}
   .step b{color:var(--acc2)}
   .clock{color:var(--warn);font-weight:700;font-family:Consolas,monospace}
+  details.key{border:1px dashed var(--warn);border-radius:10px;padding:14px 18px;margin:22px 0;background:#221a0e}
+  details.key summary{cursor:pointer;color:var(--warn);font-weight:700}
+  details.key table{font-size:.85rem}
+  .printbar{position:sticky;top:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:14px 0;z-index:5}
+  .writein{width:100%;border:1px solid #444;border-radius:4px;height:2.2em;background:transparent}
+  .blank{display:inline-block;border-bottom:1px solid #666;min-width:170px}
+  .sketchbox{border:1px dashed #555;height:280px;border-radius:6px;margin-top:6px}
+  @media print{
+    body{background:#fff;color:#000}
+    nav.tabs,header.top,.printbar,.foot,details.key{display:none !important}
+    main{max-width:100%;padding:0}
+    .card,.step,.note,.law,.warn{border:1px solid #999;background:#fff;color:#000}
+    h2,h3,b,th,td,code,kbd,pre{color:#000 !important;background:#fff !important}
+    table,pre,.step,.q{page-break-inside:avoid}
+    a{color:#000;text-decoration:none}
+  }
 </style>
 
 <script>
@@ -77,14 +93,20 @@ const QUIZ=[
   o:["Its fee was too low","It tried to re-spend a UTXO already spent in T2","It had no outputs","Its timestamp was in the future"],
   a:1,w:"UTXOs are spent exactly once — that's what consensus guarantees."},
  {q:"Before expanding a transaction graph, your first preservation step is…",
-  o:["Cluster all inputs","Screenshot + record full txid, height, timestamp, and hash exports","Run a CoinJoin detector","Tag every address as suspect"],
-  a:1,w:"Preserve before you analyze — chain of custody first."},
+  o:["Cluster all inputs","Screenshot + record full txid, height, timestamp, and hash the exports","Run a CoinJoin detector","Tag every address as suspect"],
+  a:1,w:"Preserve before you analyze — chain of custody first (page 5 hashing box)."},
  {q:"When should you apply common-input ownership to a 30-input equal-amount transaction?",
   o:["Always","Never, without further analysis — that's a CoinJoin fingerprint","Only on weekends","Only if outputs are round"],
   a:1,w:"Equal-amount multi-input txs are classic CoinJoins; clustering them creates false attribution."},
  {q:"The on-chain trace ends when value reaches a service deposit address. The next step is…",
   o:["Keep tracing forever","Legal process to the platform for KYC/withdrawal records","Declare the case closed","Publish the addresses online"],
-  a:1,w:"The chain shows where value went; identity comes from off-chain records via legal process."}
+  a:1,w:"The chain shows where value went; identity comes from off-chain records via legal process."},
+ {q:"What does hashing an export file (e.g., SHA-256) prove?",
+  o:["That the data in it is true","That the file has not changed since it was hashed","Who created the file","That the tool was licensed"],
+  a:1,w:"Integrity, not accuracy and not authorship — that's why you also record tool + version and collection time."},
+ {q:"You hash a CSV at 14:22 UTC and write the fingerprint down. At trial the defense re-hashes it and gets a DIFFERENT fingerprint. The most likely explanation is…",
+  o:["Hash algorithms are random","The file was altered after collection (or it's a different file)","SHA-256 expires after 30 days","UTC was wrong"],
+  a:1,w:"Same file + same algorithm = same fingerprint, always. A different result means different bytes."}
 ];
 function renderQuiz(){
   const c=document.getElementById('quiz');
@@ -119,13 +141,22 @@ window.onload=renderQuiz;
     <div class="tag">Law Enforcement Training · Sample data only · Tool-agnostic</div>
   </div>
 </header>
-<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="on">7 · Quiz & Wrap</a></nav>
+<nav class="tabs"><a href="index.html" class="">Home</a><a href="01-utxo-recap.html" class="">1 · UTXO Recap</a><a href="02-heuristics.html" class="">2 · Tracing Heuristics</a><a href="03-tracing-lab.html" class="">3 · Tracing Lab</a><a href="04-op-return.html" class="">4 · OP_RETURN</a><a href="05-visual-analysis.html" class="">5 · Visual Analysis</a><a href="06-case-study.html" class="">6 · Case Study</a><a href="07-quiz.html" class="on">7 · Quiz & Wrap</a><a href="08-worksheet.html" class="">8 · Worksheet</a></nav>
 <main>
 
 <p class="kicker">Segment 6 · 4 minutes + take-home</p>
 <h2>Knowledge Check &amp; Wrap-Up</h2>
 <p>Answer individually, then compare with a partner. The quiz is self-scoring and works offline.</p>
 <div id="quiz"></div>
+
+<details class="key">
+<summary>🔑 INSTRUCTOR ANSWER KEY — click to reveal (hidden from print)</summary>
+<p style="color:var(--mut);font-size:.85rem">For the instructor's screen only. This box is excluded when the page is printed, and students should attempt all questions first — the interactive feedback above gives the same rationales one at a time.</p>
+<table>
+<tr><th>Question</th><th>Correct</th><th>Rationale</th></tr>
+<tr><td>Q1</td><td><b>A</b></td><td>All inputs must be signed for — ordinary wallets spend their own UTXOs together. (Watch for CoinJoin exceptions.)</td></tr><tr><td>Q2</td><td><b>B</b></td><td>Script-type match is the strongest; 'smaller' and 'position' are weak tiebreakers.</td></tr><tr><td>Q3</td><td><b>A</b></td><td>OP_RETURN outputs are provably unspendable and carry up to 80 bytes of data.</td></tr><tr><td>Q4</td><td><b>C</b></td><td>Many unrelated inflows + sweep = classic service deposit pattern (Heuristic 3).</td></tr><tr><td>Q5</td><td><b>B</b></td><td>UTXOs are spent exactly once — that's what consensus guarantees.</td></tr><tr><td>Q6</td><td><b>B</b></td><td>Preserve before you analyze — chain of custody first (page 5 hashing box).</td></tr><tr><td>Q7</td><td><b>B</b></td><td>Equal-amount multi-input txs are classic CoinJoins; clustering them creates false attribution.</td></tr><tr><td>Q8</td><td><b>B</b></td><td>The chain shows where value went; identity comes from off-chain records via legal process.</td></tr><tr><td>Q9</td><td><b>B</b></td><td>Integrity, not accuracy and not authorship — that's why you also record tool + version and collection time.</td></tr><tr><td>Q10</td><td><b>B</b></td><td>Same file + same algorithm = same fingerprint, always. A different result means different bytes.</td></tr>
+</table>
+</details>
 
 <h2>Wrap-up: what you learned today</h2>
 <div class="card">
@@ -134,6 +165,7 @@ window.onload=renderQuiz;
 <li><b>Three heuristics do the clustering:</b> common-input ownership, change detection, address reuse — each with known failure modes.</li>
 <li><b>You traced a 7-hop ransom flow</b> from victim payment to exchange deposit, and documented every hop on a worksheet.</li>
 <li><b>OP_RETURN outputs carry data, not money</b> — decode them; they can link a transaction to documents, notes, and protocols.</li>
+<li><b>Hash every export at the moment of collection</b> — integrity proof for court, 30 seconds, built into every OS.</li>
 <li><b>Visual analysis is a method, not a product:</b> preserve → expand → color → follow the change spine → annotate → export table + graph.</li>
 <li><b>The chain ends at the service door; identity comes from legal process.</b></li>
 </ol>
@@ -153,7 +185,7 @@ window.onload=renderQuiz;
 <div class="law">Next class: <b>Advanced obfuscation &amp; casework</b> — mixers and CoinJoins in depth, tracing Lightning channel flows, cross-chain hops, OSINT corroboration, and building the full investigative report from all five classes. Bring a laptop: we'll run a guided trace on a live explorer in a sandboxed exercise.</div>
 
 <h3>Homework (10 min)</h3>
-<div class="note">Re-run the RANSOM-7 trace using only the printed dataset and a blank worksheet — no slides. If you can produce the full evidentiary table from memory of method (not of answers), you're ready for real casework supervision.</div>
+<div class="note">Re-run the RANSOM-7 trace using only the printed dataset and a blank worksheet (<a href="08-worksheet.html">page 8</a>) — no slides. If you can produce the full evidentiary table from memory of method (not of answers), you're ready for real casework supervision. Bonus: hash your completed worksheet scan and record the fingerprint.</div>
 
 <div class="foot">Class 4 of 5 · Prerequisite: Class 3 (UTXO model) · All transactions, addresses and TXIDs in this course are <b>fabricated sample data</b> for training purposes. Nothing here references real persons or real on-chain activity.</div>
 </main>
